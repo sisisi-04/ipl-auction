@@ -6,15 +6,46 @@
 </head>
 <body>
     <h1>🏏 IPL Auction Host Panel</h1>
-    <h2>Host Page Working Successfully!</h2>
 
 ```
-<p>Budget Team A: 150 Lakhs</p>
-<p>Budget Team B: 150 Lakhs</p>
+<input type="text" id="playerName" placeholder="Player Name">
+<input type="number" id="startPrice" placeholder="Starting Price (Lakhs)">
 
-<button>Start Auction</button>
+<button onclick="savePlayer()">Save Test Player</button>
+
+<p id="status">Waiting...</p>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBoFnhlMryKch7mOT-M1BJ_heuIJiJrumM",
+        authDomain: "auction-80d2b.firebaseapp.com",
+        projectId: "auction-80d2b",
+        storageBucket: "auction-80d2b.firebasestorage.app",
+        messagingSenderId: "365337100245",
+        appId: "1:365337100245:web:ae838c4e1eed2c4c1a875c",
+        measurementId: "G-0E5RSF3J71"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.savePlayer = async function () {
+        const player = document.getElementById("playerName").value;
+        const price = document.getElementById("startPrice").value;
+
+        await setDoc(doc(db, "auction", "current"), {
+            player: player,
+            price: Number(price)
+        });
+
+        document.getElementById("status").innerText =
+            "Saved to Firestore!";
+    };
+</script>
 ```
 
 </body>
 </html>
-
