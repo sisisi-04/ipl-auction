@@ -36,14 +36,13 @@
     const player = document.getElementById("playerName").value;
     const price = Number(document.getElementById("startPrice").value);
 
-    await setDoc(doc(db, "auction", "current"), {
-        player: player,
-        startingPrice: price,
-        currentBid: price,
-        highestBidder: "None",
-        auctionActive: true
-    });
-
+ await setDoc(doc(db, "auction", "current"), {
+    player: player,
+    startingPrice: price,
+    currentBid: price,
+    highestBidder: "None",
+    auctionActive: true
+});
     document.getElementById("status").innerText =
         "Auction Started!";
 };
