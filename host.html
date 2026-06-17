@@ -32,18 +32,21 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    window.savePlayer = async function () {
-        const player = document.getElementById("playerName").value;
-        const price = document.getElementById("startPrice").value;
+   window.savePlayer = async function () {
+    const player = document.getElementById("playerName").value;
+    const price = Number(document.getElementById("startPrice").value);
 
-        await setDoc(doc(db, "auction", "current"), {
-            player: player,
-            price: Number(price)
-        });
+    await setDoc(doc(db, "auction", "current"), {
+        player: player,
+        startingPrice: price,
+        currentBid: price,
+        highestBidder: "None",
+        auctionActive: true
+    });
 
-        document.getElementById("status").innerText =
-            "Saved to Firestore!";
-    };
+    document.getElementById("status").innerText =
+        "Auction Started!";
+};
 </script>
 ```
 
