@@ -1,6 +1,46 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>Team A</title>
+</head>
 <body>
-<h1>TEAM A PAGE WORKING</h1>
+    <h1>🏏 Team A</h1>
+
+    <h2 id="player">Waiting for auction...</h2>
+    <h3 id="bid">Current Bid: --</h3>
+    <h3 id="bidder">Highest Bidder: --</h3>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBoFnhlMryKch7mOT-M1BJ_heuIJiJrumM",
+            authDomain: "auction-80d2b.firebaseapp.com",
+            projectId: "auction-80d2b",
+            storageBucket: "auction-80d2b.firebasestorage.app",
+            messagingSenderId: "365337100245",
+            appId: "1:365337100245:web:ae838c4e1eed2c4c1a875c",
+            measurementId: "G-0E5RSF3J71"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        onSnapshot(doc(db, "auction", "current"), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+
+                document.getElementById("player").innerText =
+                    "Player: " + data.player;
+
+                document.getElementById("bid").innerText =
+                    "Current Bid: " + data.currentBid + " Lakhs";
+
+                document.getElementById("bidder").innerText =
+                    "Highest Bidder: " + data.highestBidder;
+            }
+        });
+    </script>
 </body>
 </html>
