@@ -1,53 +1,214 @@
 <!DOCTYPE html>
-
 <html>
 <head>
-    <title>IPL Auction Host</title>
+  <title>IPL Auction Host Panel</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0f1a;
+      color: white;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      background: #11182a;
+      padding: 15px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      border-bottom: 2px solid #1f2a44;
+    }
+
+    /* MAIN LAYOUT */
+    .container {
+      display: flex;
+      height: calc(100vh - 60px);
+    }
+
+    /* LEFT: PLAYER LIST */
+    .left {
+      width: 30%;
+      background: #0f1625;
+      padding: 10px;
+      overflow-y: auto;
+      border-right: 1px solid #1f2a44;
+    }
+
+    /* CENTER: LIVE AUCTION */
+    .center {
+      flex: 1;
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* RIGHT: CONTROLS */
+    .right {
+      width: 25%;
+      background: #0f1625;
+      padding: 15px;
+      border-left: 1px solid #1f2a44;
+    }
+
+    /* PLAYER CARD */
+    .card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      border: 1px solid transparent;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+      border: 1px solid #00ffcc;
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 12px;
+    }
+
+    /* LIVE CARD */
+    .live-card {
+      background: rgba(255,255,255,0.06);
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,255,204,0.2);
+    }
+
+    .live-card img {
+      width: 220px;
+      border-radius: 15px;
+    }
+
+    .price {
+      font-size: 28px;
+      color: #00ffcc;
+      margin-top: 10px;
+    }
+
+    .bidder {
+      color: #ffcc00;
+      margin-top: 10px;
+    }
+
+    /* BUTTONS */
+    button {
+      padding: 10px;
+      width: 100%;
+      margin-top: 10px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .start { background: #00ffcc; }
+    .next { background: #ffcc00; }
+    .sold { background: #ff4d4d; }
+  </style>
 </head>
+
 <body>
-    <h1>🏏 IPL Auction Host Panel</h1>
 
-```
-<input type="text" id="playerName" placeholder="Player Name">
-<input type="number" id="startPrice" placeholder="Starting Price (Lakhs)">
+<div class="topbar">
+🏏 IPL AUCTION HOST PANEL
+</div>
 
-<button onclick="savePlayer()">Save Test Player</button>
+<div class="container">
 
-<p id="status">Waiting...</p>
+  <!-- LEFT: PLAYERS -->
+  <div class="left">
+    <h3>Players</h3>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    <div class="card" onclick="selectPlayer('Virat Kohli','Batsman',20,'virat.jpg')">
+      <img src="virat.jpg">
+      <h4>Virat Kohli</h4>
+      <p>Batsman</p>
+    </div>
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBoFnhlMryKch7mOT-M1BJ_heuIJiJrumM",
-        authDomain: "auction-80d2b.firebaseapp.com",
-        projectId: "auction-80d2b",
-        storageBucket: "auction-80d2b.firebasestorage.app",
-        messagingSenderId: "365337100245",
-        appId: "1:365337100245:web:ae838c4e1eed2c4c1a875c",
-        measurementId: "G-0E5RSF3J71"
-    };
+    <div class="card" onclick="selectPlayer('MS Dhoni','Wicketkeeper',20,'dhoni.jpg')">
+      <img src="dhoni.jpg">
+      <h4>MS Dhoni</h4>
+      <p>Wicketkeeper</p>
+    </div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  </div>
 
-   window.savePlayer = async function () {
-    const player = document.getElementById("playerName").value;
-    const price = Number(document.getElementById("startPrice").value);
+  <!-- CENTER -->
+  <div class="center">
 
- await setDoc(doc(db, "auction", "current"), {
-    player: player,
-    startingPrice: price,
-    currentBid: price,
-    highestBidder: "None",
-    auctionActive: true
-});
-    document.getElementById("status").innerText =
-        "Auction Started!";
-};
+    <div class="live-card">
+      <h2>LIVE AUCTION</h2>
+
+      <img id="playerImg" src="" />
+
+      <h2 id="playerName">Select Player</h2>
+      <p id="playerRole"></p>
+
+      <div class="price">₹ <span id="bid">0</span> Lakhs</div>
+      <div class="bidder">Highest Bidder: <span id="bidder">None</span></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+
+    <h3>Controls</h3>
+
+    <button class="start" onclick="startAuction()">Start Auction</button>
+    <button class="next" onclick="nextPlayer()">Next Player</button>
+    <button class="sold" onclick="sold()">Mark SOLD</button>
+
+    <hr>
+
+    <h4>Add Player</h4>
+    <input placeholder="Name" id="name"><br><br>
+    <input placeholder="Role" id="role"><br><br>
+    <input placeholder="Base Price" id="price"><br><br>
+    <input placeholder="Image URL" id="img"><br><br>
+
+    <button onclick="addPlayer()">Add Player</button>
+
+  </div>
+
+</div>
+
+<script>
+let currentPlayer = null;
+let bid = 0;
+
+function selectPlayer(name, role, price, img) {
+  currentPlayer = { name, role, price, img };
+  bid = price;
+
+  document.getElementById("playerName").innerText = name;
+  document.getElementById("playerRole").innerText = role;
+  document.getElementById("bid").innerText = price;
+  document.getElementById("playerImg").src = img;
+}
+
+function startAuction() {
+  alert("Auction Started for " + currentPlayer.name);
+}
+
+function nextPlayer() {
+  alert("Move to next player");
+}
+
+function sold() {
+  alert(currentPlayer.name + " SOLD!");
+}
+
+function addPlayer() {
+  alert("Player Added (connect Firestore next step)");
+}
 </script>
-```
 
 </body>
 </html>
