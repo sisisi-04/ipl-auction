@@ -1,197 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>THE GRAND IPL AUCTION</title>
-
+<title>IPL HOST</title>
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: linear-gradient(to bottom, #2b0000, #000000);
-  color: gold;
-}
-
-.header {
-  text-align: center;
-  font-size: 28px;
-  padding: 20px;
-  background: linear-gradient(90deg, gold, #b8860b);
-  color: black;
-  font-weight: bold;
-}
-
-.container {
-  display: flex;
-  gap: 20px;
-  padding: 20px;
-}
-
-.panel {
-  flex: 1;
-  background: rgba(0,0,0,0.7);
-  border: 2px solid gold;
-  border-radius: 12px;
-  padding: 15px;
-}
-
-input {
-  width: 90%;
-  padding: 10px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 6px;
-}
-
-button {
-  background: gold;
-  border: none;
-  padding: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 100%;
-}
-
-.player-card {
-  background: #1a0000;
-  border: 1px solid gold;
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.player-card img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  border: 2px solid gold;
-}
-
-.actions button {
-  margin: 5px;
-  width: auto;
-}
+body { background:#000; color:gold; font-family:Arial; }
+.card { border:1px solid gold; padding:10px; margin:10px; }
+button { margin:5px; }
 </style>
 </head>
 
 <body>
+<h1>🏏 HOST CONTROL ROOM</h1>
 
-<div class="header">
-👑 THE GRAND IPL AUCTION CONTROL ROOM
-</div>
+<input id="name" placeholder="Player Name"><br>
+<input id="price" placeholder="Base Price"><br>
+<input id="img" placeholder="Image URL"><br>
 
-<div class="container">
+<button onclick="addPlayer()">Add Player</button>
 
-  <div class="panel">
-    <h2>Add Player</h2>
-
-    <input id="name" placeholder="Player Name" />
-    <input id="price" type="number" placeholder="Starting Price (Lakhs)" />
-    <input id="img" placeholder="Image URL" />
-
-    <button onclick="addPlayer()">➕ Add Player</button>
-  </div>
-
-  <div class="panel">
-    <h2>Live Auction Players</h2>
-    <div id="playerList"></div>
-  </div>
-
-</div>
+<hr>
+<div id="list"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getFirestore,
-  collection,
-  addDoc,
-  onSnapshot,
-  updateDoc,
-  doc
+getFirestore, collection, addDoc, onSnapshot, doc, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// 🔥 YOUR FIREBASE CONFIG
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
+apiKey: "YOUR_KEY",
+authDomain: "YOUR_DOMAIN",
+projectId: "YOUR_ID"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const col = collection(db, "players");
 
-// ------------------- ADD PLAYER -------------------
-window.addPlayer = async function () {
-  const name = document.getElementById("name").value;
-  const price = document.getElementById("price").value;
-  const img = document.getElementById("img").value;
-
-  if (!name || !price) return;
-
-  await addDoc(collection(db, "players"), {
-    name,
-    price,
-    img,
-    status: "unsold",
-    createdAt: Date.now()
-  });
-
-  console.log("Player added!");
+window.addPlayer = async () => {
+await addDoc(col, {
+name: name.value,
+price: Number(price.value),
+img: img.value,
+status: "unsold",
+currentBid: Number(price.value),
+soldTo: null
+});
 };
 
-// ------------------- LIVE LIST -------------------
-let players = [];
+onSnapshot(col, snap => {
+list.innerHTML = "";
+snap.forEach(d => {
+let p = d.data();
 
-onSnapshot(collection(db, "players"), (snapshot) => {
-  players = snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+list.innerHTML += `
+<div class="card">
+<img src="${p.img}" width="60"><br>
+<b>${p.name}</b><br>
+💰 ${p.currentBid}<br>
 
-  renderPlayers();
+<button onclick="sell('${d.id}','A')">Sell A</button>
+<button onclick="sell('${d.id}','B')">Sell B</button>
+</div>
+`;
+});
 });
 
-// ------------------- RENDER -------------------
-function renderPlayers() {
-  const list = document.getElementById("playerList");
-  list.innerHTML = "";
-
-  players.forEach(p => {
-    if (p.status === "sold") return;
-
-    list.innerHTML += `
-      <div class="player-card">
-        <img src="${p.img || 'https://via.placeholder.com/60'}" />
-        <div>
-          <h3>${p.name}</h3>
-          <p>💰 ${p.price} Lakhs</p>
-
-          <div class="actions">
-            <button onclick="sellPlayer('${p.id}', 'A')">Sell to A</button>
-            <button onclick="sellPlayer('${p.id}', 'B')">Sell to B</button>
-          </div>
-        </div>
-      </div>
-    `;
-  });
-}
-
-// ------------------- SELL PLAYER -------------------
-window.sellPlayer = async function (id, team) {
-  const ref = doc(db, "players", id);
-
-  await updateDoc(ref, {
-    status: "sold",
-    soldTo: team
-  });
-
-  console.log("Sold to", team);
+window.sell = async (id, team) => {
+await updateDoc(doc(db,"players",id), {
+status:"sold",
+soldTo:team
+});
 };
 </script>
 
