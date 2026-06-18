@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>THE GRANT IPL AUCTION</title>
+<title>THE GRAND IPL AUCTION</title>
 
 <style>
 body {
@@ -85,7 +85,6 @@ button {
 
 <div class="container">
 
-  <!-- ADD PLAYER -->
   <div class="panel">
     <h2>Add Player</h2>
 
@@ -96,7 +95,6 @@ button {
     <button onclick="addPlayer()">➕ Add Player</button>
   </div>
 
-  <!-- PLAYER LIST -->
   <div class="panel">
     <h2>Live Auction Players</h2>
     <div id="playerList"></div>
@@ -104,30 +102,62 @@ button {
 
 </div>
 
-<script>
-let players = [];
-let teamA = [];
-let teamB = [];
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  onSnapshot,
+  updateDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-function addPlayer() {
+// 🔥 YOUR FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "XXXX",
+  appId: "XXXX"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ------------------- ADD PLAYER -------------------
+window.addPlayer = async function () {
   const name = document.getElementById("name").value;
   const price = document.getElementById("price").value;
   const img = document.getElementById("img").value;
 
   if (!name || !price) return;
 
-  const player = {
-    id: Date.now(),
+  await addDoc(collection(db, "players"), {
     name,
     price,
     img,
-    status: "unsold"
-  };
+    status: "unsold",
+    createdAt: Date.now()
+  });
 
-  players.push(player);
+  console.log("Player added!");
+};
+
+// ------------------- LIVE LIST -------------------
+let players = [];
+
+onSnapshot(collection(db, "players"), (snapshot) => {
+  players = snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+
   renderPlayers();
-}
+});
 
+// ------------------- RENDER -------------------
 function renderPlayers() {
   const list = document.getElementById("playerList");
   list.innerHTML = "";
@@ -143,8 +173,8 @@ function renderPlayers() {
           <p>💰 ${p.price} Lakhs</p>
 
           <div class="actions">
-            <button onclick="sellPlayer(${p.id}, 'A')">Sell to A</button>
-            <button onclick="sellPlayer(${p.id}, 'B')">Sell to B</button>
+            <button onclick="sellPlayer('${p.id}', 'A')">Sell to A</button>
+            <button onclick="sellPlayer('${p.id}', 'B')">Sell to B</button>
           </div>
         </div>
       </div>
@@ -152,18 +182,17 @@ function renderPlayers() {
   });
 }
 
-function sellPlayer(id, team) {
-  let player = players.find(p => p.id === id);
-  player.status = "sold";
+// ------------------- SELL PLAYER -------------------
+window.sellPlayer = async function (id, team) {
+  const ref = doc(db, "players", id);
 
-  if (team === "A") teamA.push(player);
-  if (team === "B") teamB.push(player);
+  await updateDoc(ref, {
+    status: "sold",
+    soldTo: team
+  });
 
-  renderPlayers();
-
-  console.log("TEAM A:", teamA);
-  console.log("TEAM B:", teamB);
-}
+  console.log("Sold to", team);
+};
 </script>
 
 </body>
