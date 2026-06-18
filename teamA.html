@@ -1,240 +1,111 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>IPL AUCTION TV</title>
+  <title>Team A Auction</title>
 
-<style>
-body {
-    margin: 0;
-    font-family: Arial;
-    background: radial-gradient(circle at top, #050816, #000);
-    color: white;
-    overflow: hidden;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #0b0f1a;
+      color: white;
+      text-align: center;
+    }
 
-/* TOP BAR */
-.topbar {
-    padding: 12px;
-    text-align: center;
-    font-size: 22px;
-    font-weight: bold;
-    background: linear-gradient(90deg, #ff512f, #dd2476);
-    letter-spacing: 2px;
-}
+    .topbar {
+      background: #11182a;
+      padding: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #00ffcc;
+    }
 
-/* LIVE BANNER */
-.liveBanner {
-    position: absolute;
-    top: 60px;
-    width: 100%;
-    text-align: center;
-    font-size: 18px;
-    color: gold;
-    animation: blink 1s infinite;
-}
+    .card {
+      width: 320px;
+      margin: 30px auto;
+      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,255,204,0.2);
+    }
 
-@keyframes blink {
-    50% { opacity: 0.3; }
-}
+    img {
+      width: 100%;
+      border-radius: 15px;
+    }
 
-/* MAIN SCREEN */
-.screen {
-    display: flex;
-    height: 100vh;
-}
+    .name {
+      font-size: 22px;
+      margin-top: 10px;
+    }
 
-/* TEAM PANELS */
-.team {
-    width: 20%;
-    padding: 20px;
-    text-align: center;
-}
+    .price {
+      font-size: 26px;
+      color: #00ffcc;
+      margin: 10px 0;
+    }
 
-.teamA {
-    background: rgba(0,255,100,0.08);
-    border-right: 2px solid #00ff66;
-}
+    .bidder {
+      color: #ffcc00;
+      margin-bottom: 15px;
+    }
 
-.teamB {
-    background: rgba(0,170,255,0.08);
-    border-left: 2px solid #00aaff;
-}
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-.team h2 {
-    margin-top: 40px;
-    font-size: 26px;
-}
+    .bid {
+      background: #00ffcc;
+    }
 
-.scoreBox {
-    margin-top: 40px;
-    font-size: 40px;
-    font-weight: bold;
-}
-
-/* CENTER STAGE */
-.center {
-    width: 60%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.card {
-    width: 450px;
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-    background: rgba(255,255,255,0.06);
-    box-shadow: 0 0 30px rgba(255,0,150,0.3);
-    animation: glow 2s infinite;
-}
-
-@keyframes glow {
-    50% { box-shadow: 0 0 50px rgba(0,255,200,0.4); }
-}
-
-.player {
-    font-size: 32px;
-    margin-bottom: 10px;
-}
-
-.bid {
-    font-size: 70px;
-    color: #00ffcc;
-    margin: 20px 0;
-    transition: 0.3s;
-}
-
-.bidder {
-    font-size: 20px;
-    color: gold;
-}
-
-/* BUTTON */
-button {
-    margin-top: 20px;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(90deg, #00ff66, #0072ff);
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-button:hover {
-    transform: scale(1.05);
-}
-
-/* WINNER BANNER */
-.winner {
-    margin-top: 20px;
-    font-size: 28px;
-    color: #ffd700;
-    animation: pop 1s infinite;
-}
-
-@keyframes pop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-}
-
-/* HAMMER ANIMATION */
-.hammer {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 80px;
-    opacity: 0;
-}
-
-.hammer.active {
-    animation: slam 1s ease-in-out;
-}
-
-@keyframes slam {
-    0% { transform: translate(-50%, -200%) rotate(-30deg); opacity: 0; }
-    50% { transform: translate(-50%, -50%) rotate(20deg); opacity: 1; }
-    100% { transform: translate(-50%, 200%) rotate(0deg); opacity: 0; }
-}
-</style>
+    .bid:hover {
+      background: #00ddb3;
+    }
+  </style>
 </head>
 
 <body>
 
 <div class="topbar">
-🏏 IPL LIVE AUCTION BROADCAST TV
+🏏 TEAM A AUCTION ROOM
 </div>
 
-<div class="liveBanner" id="live">
-🔴 LIVE AUCTION IN PROGRESS
-</div>
+<div class="card">
 
-<div class="screen">
+  <img id="playerImg" src="https://via.placeholder.com/300">
 
-    <!-- TEAM A -->
-    <div class="team teamA">
-        <h2>🟢 TEAM A</h2>
-        <div class="scoreBox" id="teamA">0</div>
-    </div>
+  <div class="name" id="playerName">Waiting for Player...</div>
 
-    <!-- CENTER -->
-    <div class="center">
-        <div class="card">
-            <div class="player" id="player">DHONI</div>
+  <div class="price">
+    ₹ <span id="bid">0</span> Lakhs
+  </div>
 
-            <div class="bid" id="bid">0</div>
+  <div class="bidder">
+    Highest Bidder: <span id="bidder">None</span>
+  </div>
 
-            <div class="bidder" id="bidder">No Bids Yet</div>
-
-            <button onclick="placeBid()">PLACE BID +10</button>
-
-            <div class="winner" id="winner"></div>
-        </div>
-    </div>
-
-    <!-- TEAM B -->
-    <div class="team teamB">
-        <h2>🔵 TEAM B</h2>
-        <div class="scoreBox" id="teamB">0</div>
-    </div>
+  <button class="bid" onclick="placeBid()">BID +10 L</button>
 
 </div>
-
-<!-- HAMMER -->
-<div class="hammer" id="hammer">🔨</div>
 
 <script>
-let bid = 0;
-let current = "TEAM B";
+let currentBid = 0;
+let teamName = "TEAM A";
 
 function placeBid() {
+  currentBid += 10;
 
-    bid += 10;
+  document.getElementById("bid").innerText = currentBid;
+  document.getElementById("bidder").innerText = teamName;
 
-    current = (current === "TEAM A") ? "TEAM B" : "TEAM A";
-
-    document.getElementById("bid").innerText = bid;
-    document.getElementById("bidder").innerText = "Leading: " + current;
-
-    if(current === "TEAM A") {
-        document.getElementById("teamA").innerText = bid;
-    } else {
-        document.getElementById("teamB").innerText = bid;
-    }
-
-    // hammer effect
-    let hammer = document.getElementById("hammer");
-    hammer.classList.remove("active");
-    void hammer.offsetWidth;
-    hammer.classList.add("active");
-
-    // winner message
-    document.getElementById("winner").innerText =
-        "🔥 " + current + " is leading!";
+  alert("Bid placed by TEAM A: " + currentBid);
 }
 </script>
 
