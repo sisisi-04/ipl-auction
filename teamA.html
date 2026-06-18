@@ -1,80 +1,242 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Team A Auction</title>
+<title>IPL AUCTION TV</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: radial-gradient(circle at top, #050816, #000);
+    color: white;
+    overflow: hidden;
+}
+
+/* TOP BAR */
+.topbar {
+    padding: 12px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    background: linear-gradient(90deg, #ff512f, #dd2476);
+    letter-spacing: 2px;
+}
+
+/* LIVE BANNER */
+.liveBanner {
+    position: absolute;
+    top: 60px;
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
+    color: gold;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0.3; }
+}
+
+/* MAIN SCREEN */
+.screen {
+    display: flex;
+    height: 100vh;
+}
+
+/* TEAM PANELS */
+.team {
+    width: 20%;
+    padding: 20px;
+    text-align: center;
+}
+
+.teamA {
+    background: rgba(0,255,100,0.08);
+    border-right: 2px solid #00ff66;
+}
+
+.teamB {
+    background: rgba(0,170,255,0.08);
+    border-left: 2px solid #00aaff;
+}
+
+.team h2 {
+    margin-top: 40px;
+    font-size: 26px;
+}
+
+.scoreBox {
+    margin-top: 40px;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+/* CENTER STAGE */
+.center {
+    width: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: 450px;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    background: rgba(255,255,255,0.06);
+    box-shadow: 0 0 30px rgba(255,0,150,0.3);
+    animation: glow 2s infinite;
+}
+
+@keyframes glow {
+    50% { box-shadow: 0 0 50px rgba(0,255,200,0.4); }
+}
+
+.player {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.bid {
+    font-size: 70px;
+    color: #00ffcc;
+    margin: 20px 0;
+    transition: 0.3s;
+}
+
+.bidder {
+    font-size: 20px;
+    color: gold;
+}
+
+/* BUTTON */
+button {
+    margin-top: 20px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #00ff66, #0072ff);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+/* WINNER BANNER */
+.winner {
+    margin-top: 20px;
+    font-size: 28px;
+    color: #ffd700;
+    animation: pop 1s infinite;
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* HAMMER ANIMATION */
+.hammer {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 80px;
+    opacity: 0;
+}
+
+.hammer.active {
+    animation: slam 1s ease-in-out;
+}
+
+@keyframes slam {
+    0% { transform: translate(-50%, -200%) rotate(-30deg); opacity: 0; }
+    50% { transform: translate(-50%, -50%) rotate(20deg); opacity: 1; }
+    100% { transform: translate(-50%, 200%) rotate(0deg); opacity: 0; }
+}
+</style>
 </head>
 
 <body>
-    <h1>🏏 Team A</h1>
 
-    <h2 id="player">Waiting for auction...</h2>
-    <h3 id="bid">Current Bid: --</h3>
-    <h3 id="bidder">Highest Bidder: --</h3>
+<div class="topbar">
+🏏 IPL LIVE AUCTION BROADCAST TV
+</div>
 
-    <button onclick="placeBid()">Place Bid (+10 Lakhs)</button>
+<div class="liveBanner" id="live">
+🔴 LIVE AUCTION IN PROGRESS
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import {
-            getFirestore,
-            doc,
-            onSnapshot,
-            getDoc,
-            updateDoc
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<div class="screen">
 
-        // Firebase config
-        const firebaseConfig = {
-            apiKey: "AIzaSyBoFnhlMryKch7mOT-M1BJ_heuIJiJrumM",
-            authDomain: "auction-80d2b.firebaseapp.com",
-            projectId: "auction-80d2b",
-            storageBucket: "auction-80d2b.firebasestorage.app",
-            messagingSenderId: "365337100245",
-            appId: "1:365337100245:web:ae838c4e1eed2c4c1a875c",
-            measurementId: "G-0E5RSF3J71"
-        };
+    <!-- TEAM A -->
+    <div class="team teamA">
+        <h2>🟢 TEAM A</h2>
+        <div class="scoreBox" id="teamA">0</div>
+    </div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    <!-- CENTER -->
+    <div class="center">
+        <div class="card">
+            <div class="player" id="player">DHONI</div>
 
-        const docRef = doc(db, "auction", "current");
+            <div class="bid" id="bid">0</div>
 
-        // LIVE LISTENER
-        onSnapshot(docRef, (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
+            <div class="bidder" id="bidder">No Bids Yet</div>
 
-                document.getElementById("player").innerText =
-                    "Player: " + (data.player || "N/A");
+            <button onclick="placeBid()">PLACE BID +10</button>
 
-                document.getElementById("bid").innerText =
-                    "Current Bid: " + (data.currentBid || 0) + " Lakhs";
+            <div class="winner" id="winner"></div>
+        </div>
+    </div>
 
-                document.getElementById("bidder").innerText =
-                    "Highest Bidder: " + (data.highestBidder || "None");
-            }
-        });
+    <!-- TEAM B -->
+    <div class="team teamB">
+        <h2>🔵 TEAM B</h2>
+        <div class="scoreBox" id="teamB">0</div>
+    </div>
 
-        // BID FUNCTION
-        window.placeBid = async function () {
-            const snap = await getDoc(docRef);
+</div>
 
-            if (!snap.exists()) {
-                alert("No auction data found!");
-                return;
-            }
+<!-- HAMMER -->
+<div class="hammer" id="hammer">🔨</div>
 
-            const data = snap.data();
+<script>
+let bid = 0;
+let current = "TEAM B";
 
-            const newBid = (data.currentBid || 0) + 10;
+function placeBid() {
 
-            await updateDoc(docRef, {
-                currentBid: newBid,
-                highestBidder: "Team A"
-            });
+    bid += 10;
 
-            alert("Bid placed successfully!");
-        };
-    </script>
+    current = (current === "TEAM A") ? "TEAM B" : "TEAM A";
+
+    document.getElementById("bid").innerText = bid;
+    document.getElementById("bidder").innerText = "Leading: " + current;
+
+    if(current === "TEAM A") {
+        document.getElementById("teamA").innerText = bid;
+    } else {
+        document.getElementById("teamB").innerText = bid;
+    }
+
+    // hammer effect
+    let hammer = document.getElementById("hammer");
+    hammer.classList.remove("active");
+    void hammer.offsetWidth;
+    hammer.classList.add("active");
+
+    // winner message
+    document.getElementById("winner").innerText =
+        "🔥 " + current + " is leading!";
+}
+</script>
+
 </body>
 </html>
