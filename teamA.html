@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Team A</title>
+    <title>Team A Auction</title>
 </head>
+
 <body>
     <h1>🏏 Team A</h1>
 
@@ -10,10 +11,19 @@
     <h3 id="bid">Current Bid: --</h3>
     <h3 id="bidder">Highest Bidder: --</h3>
 
+    <button onclick="placeBid()">Place Bid (+10 Lakhs)</button>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import {
+            getFirestore,
+            doc,
+            onSnapshot,
+            getDoc,
+            updateDoc
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+        // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyBoFnhlMryKch7mOT-M1BJ_heuIJiJrumM",
             authDomain: "auction-80d2b.firebaseapp.com",
@@ -27,20 +37,44 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        onSnapshot(doc(db, "auction", "current"), (docSnap) => {
+        const docRef = doc(db, "auction", "current");
+
+        // LIVE LISTENER
+        onSnapshot(docRef, (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
 
                 document.getElementById("player").innerText =
-                    "Player: " + data.player;
+                    "Player: " + (data.player || "N/A");
 
                 document.getElementById("bid").innerText =
-                    "Current Bid: " + data.currentBid + " Lakhs";
+                    "Current Bid: " + (data.currentBid || 0) + " Lakhs";
 
                 document.getElementById("bidder").innerText =
-                    "Highest Bidder: " + data.highestBidder;
+                    "Highest Bidder: " + (data.highestBidder || "None");
             }
         });
+
+        // BID FUNCTION
+        window.placeBid = async function () {
+            const snap = await getDoc(docRef);
+
+            if (!snap.exists()) {
+                alert("No auction data found!");
+                return;
+            }
+
+            const data = snap.data();
+
+            const newBid = (data.currentBid || 0) + 10;
+
+            await updateDoc(docRef, {
+                currentBid: newBid,
+                highestBidder: "Team A"
+            });
+
+            alert("Bid placed successfully!");
+        };
     </script>
 </body>
 </html>
