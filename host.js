@@ -50,7 +50,7 @@ window.addPlayer = async function () {
     highestBidder: null,
     soldTo: null,
     status: "waiting",
-    timer: 500,
+    timer: 300, // 5 minutes
     active: false
   });
 
@@ -64,7 +64,7 @@ window.startAuction = async function (id) {
   await updateDoc(doc(db, "players", id), {
     active: true,
     status: "live",
-    timer: 500
+    timer: 300
   });
 
   runTimer(id);
@@ -72,7 +72,7 @@ window.startAuction = async function (id) {
 
 // TIMER
 window.runTimer = async function (id) {
-  let time = 500;
+  let time = 300;
 
   const interval = setInterval(async () => {
     time--;
@@ -160,6 +160,14 @@ function renderCurrentPlayer(docs) {
 
   const p = currentPlayerDoc.data();
 
+  const minutes = String(
+    Math.floor(p.timer / 60)
+  ).padStart(2, "0");
+
+  const seconds = String(
+    p.timer % 60
+  ).padStart(2, "0");
+
   playersDiv.innerHTML = `
     <div class="player">
 
@@ -186,7 +194,7 @@ function renderCurrentPlayer(docs) {
       </p>
 
       <div class="timer">
-        ${p.timer}
+        ${minutes}:${seconds}
       </div>
 
       <div class="controls">
@@ -209,7 +217,8 @@ function renderCurrentPlayer(docs) {
           SELL TO TEAM B
         </button>
 
-        <button onclick="nextPlayer()">
+        <button
+          onclick="nextPlayer()">
           NEXT PLAYER
         </button>
 
