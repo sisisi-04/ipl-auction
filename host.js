@@ -50,7 +50,7 @@ window.addPlayer = async function () {
     highestBidder: null,
     soldTo: null,
     status: "waiting",
-    timer: 10,
+    timer: 500,
     active: false
   });
 
@@ -64,7 +64,7 @@ window.startAuction = async function (id) {
   await updateDoc(doc(db, "players", id), {
     active: true,
     status: "live",
-    timer: 10
+    timer: 500
   });
 
   runTimer(id);
@@ -72,7 +72,7 @@ window.startAuction = async function (id) {
 
 // TIMER
 window.runTimer = async function (id) {
-  let time = 10;
+  let time = 500;
 
   const interval = setInterval(async () => {
     time--;
