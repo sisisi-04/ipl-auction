@@ -1,78 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>IPL HOST</title>
-<style>
-body { background:#000; color:gold; font-family:Arial; }
-.card { border:1px solid gold; padding:10px; margin:10px; }
-button { margin:5px; }
-</style>
+  <title>Grand IPL Auction Host</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-<h1>🏏 HOST CONTROL ROOM</h1>
 
-<input id="name" placeholder="Player Name"><br>
-<input id="price" placeholder="Base Price"><br>
-<input id="img" placeholder="Image URL"><br>
-
-<button onclick="addPlayer()">Add Player</button>
-
-<hr>
-<div id="list"></div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-getFirestore, collection, addDoc, onSnapshot, doc, updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-apiKey: "YOUR_KEY",
-authDomain: "YOUR_DOMAIN",
-projectId: "YOUR_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const col = collection(db, "players");
-
-window.addPlayer = async () => {
-await addDoc(col, {
-name: name.value,
-price: Number(price.value),
-img: img.value,
-status: "unsold",
-currentBid: Number(price.value),
-soldTo: null
-});
-};
-
-onSnapshot(col, snap => {
-list.innerHTML = "";
-snap.forEach(d => {
-let p = d.data();
-
-list.innerHTML += `
-<div class="card">
-<img src="${p.img}" width="60"><br>
-<b>${p.name}</b><br>
-💰 ${p.currentBid}<br>
-
-<button onclick="sell('${d.id}','A')">Sell A</button>
-<button onclick="sell('${d.id}','B')">Sell B</button>
+<div class="header">
+  👑 THE GRAND IPL AUCTION
+  <span class="live">● LIVE</span>
 </div>
-`;
-});
-});
 
-window.sell = async (id, team) => {
-await updateDoc(doc(db,"players",id), {
-status:"sold",
-soldTo:team
-});
-};
-</script>
+<div class="add-panel">
+  <h2>Add Player</h2>
+
+  <input id="name" placeholder="Player Name">
+
+  <select id="category">
+    <option>Batter</option>
+    <option>Bowler</option>
+    <option>All Rounder</option>
+    <option>Wicket Keeper</option>
+  </select>
+
+  <input id="price" type="number"
+         placeholder="Base Price (Lakhs)">
+
+  <input id="img"
+         placeholder="Image URL">
+
+  <button onclick="addPlayer()">
+    ADD PLAYER
+  </button>
+</div>
+
+<div id="players"></div>
+
+<script type="module" src="host.js"></script>
 
 </body>
 </html>
