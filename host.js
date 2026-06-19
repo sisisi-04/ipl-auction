@@ -4,10 +4,13 @@ import {
   getFirestore,
   collection,
   addDoc,
-  onSnapshot
+  onSnapshot,
+  doc,
+  updateDoc,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Firebase Config
+// FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyBoFnhlMryKch7mOT-M1BJ_heuIJiJrumM",
   authDomain: "auction-80d2b.firebaseapp.com",
@@ -20,6 +23,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
 const playersRef = collection(db, "players");
 
 // HTML Elements
@@ -29,10 +33,12 @@ const price = document.getElementById("price");
 const img = document.getElementById("img");
 const playersDiv = document.getElementById("players");
 
-// Add Player
+let currentPlayerId = null;
+
+// ADD PLAYER
 window.addPlayer = async function () {
   if (!name.value || !price.value) {
-    alert("Please enter player name and price.");
+    alert("Enter player name and price.");
     return;
   }
 
@@ -49,56 +55,153 @@ window.addPlayer = async function () {
     active: false
   });
 
-  // Clear inputs
   name.value = "";
   price.value = "";
   img.value = "";
 };
 
-// Display Players Live
-onSnapshot(playersRef, (snapshot) => {
-  playersDiv.innerHTML = "";
+// START AUCTION
+window.startAuction = async function (id) {
+  await updateDoc(doc(db, "players", id), {
+    active: true,
+    status: "live",
+    timer: 10
+  });
+};
 
-  snapshot.forEach((doc) => {
-    const p = doc.data();
+// SELL TO TEAM A
+window.sellA = async function (id) {
+  await updateDoc(doc(db, "players", id), {
+    soldTo: "TEAM A",
+    status: "sold",
+    active: false
+  });
 
-    playersDiv.innerHTML += `
-      <div class="card">
+  nextPlayer();
+};
 
-        <img
-          src="${p.image || "https://via.placeholder.com/130"}"
-        >
+// SELL TO TEAM B
+window.sellB = async function (id) {
+  await updateDoc(doc(db, "players", id), {
+    soldTo: "TEAM B",
+    status: "sold",
+    active: false
+  });
 
-        <h2>${p.name}</h2>
+  nextPlayer();
+};
 
-        <p>${p.category}</p>
+// NEXT PLAYER
+window.nextPlayer = async function () {
+  const snapshot = await getDocs(playersRef);
 
-        <h3>
-          ₹${p.currentBid} Lakhs
-        </h3>
+  const docs = snapshot.docs.filter(
+    d => d.data().status !== "sold"
+  );
 
-       <p>
-       Highest Bidder:
-       ${p.highestBidder || "None"}
-       </p>
-       <button>
-       START AUCTION
-       </button>
-       
-       <button>
-       SELL TO TEAM A
-       </button>
-       
-       <button>
-       SELL TO TEAM B
-       </button>
-       
-       <button>
-       NEXT PLAYER
-       </button>
+  if (docs.length === 0) {
+    currentPlayerId = null;
+    playersDiv.innerHTML =
+      "<h2>🏆 Auction Finished</h2>";
+    return;
+  }
+
+  let index =
+    docs.findIndex(
+      d => d.id === currentPlayerId
+    );
+
+  index++;
+
+  if (index >= docs.length) {
+    index = 0;
+  }
+
+  currentPlayerId = docs[index].id;
+
+  renderCurrentPlayer(docs);
+};
+
+// RENDER PLAYER
+function renderCurrentPlayer(docs) {
+  if (docs.length === 0) return;
+
+  if (!currentPlayerId) {
+    currentPlayerId = docs[0].id;
+  }
+
+  const currentPlayerDoc =
+    docs.find(
+      d => d.id === currentPlayerId
+    );
+
+  if (!currentPlayerDoc) return;
+
+  const p = currentPlayerDoc.data();
+
+  playersDiv.innerHTML = `
+    <div class="player">
+
+      <img
+        src="${
+          p.image ||
+          "https://via.placeholder.com/280"
+        }"
+      >
+
+      <h1>${p.name}</h1>
+
+      <div class="category">
+        ${p.category}
+      </div>
+
+      <div class="bid">
+        ₹${p.currentBid} Lakhs
+      </div>
+
+      <p>
+        Highest Bidder:
+        ${p.highestBidder || "None"}
+      </p>
+
+      <div class="timer">
+        ${p.timer}
+      </div>
+
+      <div class="controls">
+
+        <button
+          onclick="startAuction('${currentPlayerDoc.id}')">
+          START AUCTION
+        </button>
+
+        <button
+          onclick="sellA('${currentPlayerDoc.id}')">
+          SELL TO TEAM A
+        </button>
+
+        <button
+          onclick="sellB('${currentPlayerDoc.id}')">
+          SELL TO TEAM B
+        </button>
+
+        <button
+          onclick="nextPlayer()">
+          NEXT PLAYER
+        </button>
 
       </div>
-    `;
-  });
+
+    </div>
+  `;
+}
+
+// LIVE FIRESTORE LISTENER
+onSnapshot(playersRef, (snapshot) => {
+  const docs = snapshot.docs.filter(
+    d => d.data().status !== "sold"
+  );
+
+  renderCurrentPlayer(docs);
 });
 
