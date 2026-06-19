@@ -77,10 +77,25 @@ onSnapshot(playersRef, (snapshot) => {
           ₹${p.currentBid} Lakhs
         </h3>
 
-        <p>
-          Highest Bidder:
-          ${p.highestBidder || "None"}
-        </p>
+       <p>
+       Highest Bidder:
+       ${p.highestBidder || "None"}
+       </p>
+       <button>
+       START AUCTION
+       </button>
+       
+       <button>
+       SELL TO TEAM A
+       </button>
+       
+       <button>
+       SELL TO TEAM B
+       </button>
+       
+       <button>
+       NEXT PLAYER
+       </button>
 
       </div>
     `;
