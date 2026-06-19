@@ -23,10 +23,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
 const playersRef = collection(db, "players");
 
-// HTML Elements
+// HTML ELEMENTS
 const name = document.getElementById("name");
 const category = document.getElementById("category");
 const price = document.getElementById("price");
@@ -67,6 +66,30 @@ window.startAuction = async function (id) {
     status: "live",
     timer: 10
   });
+
+  runTimer(id);
+};
+
+// TIMER
+window.runTimer = async function (id) {
+  let time = 10;
+
+  const interval = setInterval(async () => {
+    time--;
+
+    await updateDoc(doc(db, "players", id), {
+      timer: time
+    });
+
+    if (time <= 0) {
+      clearInterval(interval);
+
+      await updateDoc(doc(db, "players", id), {
+        active: false,
+        status: "ended"
+      });
+    }
+  }, 1000);
 };
 
 // SELL TO TEAM A
@@ -106,10 +129,9 @@ window.nextPlayer = async function () {
     return;
   }
 
-  let index =
-    docs.findIndex(
-      d => d.id === currentPlayerId
-    );
+  let index = docs.findIndex(
+    d => d.id === currentPlayerId
+  );
 
   index++;
 
@@ -130,10 +152,9 @@ function renderCurrentPlayer(docs) {
     currentPlayerId = docs[0].id;
   }
 
-  const currentPlayerDoc =
-    docs.find(
-      d => d.id === currentPlayerId
-    );
+  const currentPlayerDoc = docs.find(
+    d => d.id === currentPlayerId
+  );
 
   if (!currentPlayerDoc) return;
 
@@ -171,22 +192,24 @@ function renderCurrentPlayer(docs) {
       <div class="controls">
 
         <button
-          onclick="startAuction('${currentPlayerDoc.id}')">
+          onclick="startAuction('${currentPlayerDoc.id}')"
+          ${p.status === "live" ? "disabled" : ""}>
           START AUCTION
         </button>
 
         <button
-          onclick="sellA('${currentPlayerDoc.id}')">
+          onclick="sellA('${currentPlayerDoc.id}')"
+          ${p.status !== "ended" ? "disabled" : ""}>
           SELL TO TEAM A
         </button>
 
         <button
-          onclick="sellB('${currentPlayerDoc.id}')">
+          onclick="sellB('${currentPlayerDoc.id}')"
+          ${p.status !== "ended" ? "disabled" : ""}>
           SELL TO TEAM B
         </button>
 
-        <button
-          onclick="nextPlayer()">
+        <button onclick="nextPlayer()">
           NEXT PLAYER
         </button>
 
@@ -196,7 +219,7 @@ function renderCurrentPlayer(docs) {
   `;
 }
 
-// LIVE FIRESTORE LISTENER
+// LIVE LISTENER
 onSnapshot(playersRef, (snapshot) => {
   const docs = snapshot.docs.filter(
     d => d.data().status !== "sold"
