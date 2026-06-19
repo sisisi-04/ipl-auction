@@ -25,7 +25,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const playersRef = collection(db, "players");
 
-// HTML ELEMENTS
 const name = document.getElementById("name");
 const category = document.getElementById("category");
 const price = document.getElementById("price");
@@ -33,6 +32,27 @@ const img = document.getElementById("img");
 const playersDiv = document.getElementById("players");
 
 let currentPlayerId = null;
+
+// IPL CATEGORY ORDER
+const categoryOrder = {
+  "Marquee": 1,
+  "Batter": 2,
+  "All Rounder": 3,
+  "Wicket Keeper": 4,
+  "Bowler": 5,
+  "Emerging Player": 6
+};
+
+function sortPlayers(docs) {
+  docs.sort((a, b) => {
+    return (
+      categoryOrder[a.data().category] -
+      categoryOrder[b.data().category]
+    );
+  });
+
+  return docs;
+}
 
 // ADD PLAYER
 window.addPlayer = async function () {
@@ -50,7 +70,7 @@ window.addPlayer = async function () {
     highestBidder: null,
     soldTo: null,
     status: "waiting",
-    timer: 300, // 5 minutes
+    timer: 300,
     active: false
   });
 
@@ -71,7 +91,7 @@ window.startAuction = async function (id) {
 };
 
 // TIMER
-window.runTimer = async function (id) {
+window.runTimer = function (id) {
   let time = 300;
 
   const interval = setInterval(async () => {
@@ -92,7 +112,7 @@ window.runTimer = async function (id) {
   }, 1000);
 };
 
-// SELL TO TEAM A
+// SELL TEAM A
 window.sellA = async function (id) {
   await updateDoc(doc(db, "players", id), {
     soldTo: "TEAM A",
@@ -103,7 +123,7 @@ window.sellA = async function (id) {
   nextPlayer();
 };
 
-// SELL TO TEAM B
+// SELL TEAM B
 window.sellB = async function (id) {
   await updateDoc(doc(db, "players", id), {
     soldTo: "TEAM B",
@@ -118,14 +138,18 @@ window.sellB = async function (id) {
 window.nextPlayer = async function () {
   const snapshot = await getDocs(playersRef);
 
-  const docs = snapshot.docs.filter(
+  let docs = snapshot.docs.filter(
     d => d.data().status !== "sold"
   );
 
+  docs = sortPlayers(docs);
+
   if (docs.length === 0) {
     currentPlayerId = null;
+
     playersDiv.innerHTML =
-      "<h2>🏆 Auction Finished</h2>";
+      "<h2>🏆 AUCTION FINISHED</h2>";
+
     return;
   }
 
@@ -148,6 +172,8 @@ window.nextPlayer = async function () {
 function renderCurrentPlayer(docs) {
   if (docs.length === 0) return;
 
+  docs = sortPlayers(docs);
+
   if (!currentPlayerId) {
     currentPlayerId = docs[0].id;
   }
@@ -156,7 +182,10 @@ function renderCurrentPlayer(docs) {
     d => d.id === currentPlayerId
   );
 
-  if (!currentPlayerDoc) return;
+  if (!currentPlayerDoc) {
+    currentPlayerId = docs[0].id;
+    return renderCurrentPlayer(docs);
+  }
 
   const p = currentPlayerDoc.data();
 
@@ -230,9 +259,11 @@ function renderCurrentPlayer(docs) {
 
 // LIVE LISTENER
 onSnapshot(playersRef, (snapshot) => {
-  const docs = snapshot.docs.filter(
+  let docs = snapshot.docs.filter(
     d => d.data().status !== "sold"
   );
+
+  docs = sortPlayers(docs);
 
   renderCurrentPlayer(docs);
 });
