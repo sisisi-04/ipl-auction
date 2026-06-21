@@ -6,11 +6,10 @@ import {
   addDoc,
   onSnapshot,
   doc,
-  getDoc,
   updateDoc,
-  getDocs
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  getDocs,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let timerInterval = null;
 
@@ -242,7 +241,77 @@ window.sellB = async function (id) {
 
   nextPlayer();
 };
+window.resetAuction = async function () {
 
+  if (!confirm(
+    "Reset the entire auction?"
+  )) {
+    return;
+  }
+
+  // Stop timer if running
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+
+  // Reset all players
+  const snapshot =
+    await getDocs(playersRef);
+
+  for (const d of snapshot.docs) {
+
+    const p = d.data();
+
+    await updateDoc(
+      doc(db, "players", d.id),
+      {
+        currentBid:
+          p.basePrice,
+
+        highestBidder:
+          null,
+
+        soldTo:
+          null,
+
+        status:
+          "waiting",
+
+        active:
+          false,
+
+        timer:
+          300
+      }
+    );
+  }
+
+  // Reset Team A
+  await updateDoc(
+    doc(db, "teams", "teamA"),
+    {
+      budget: 10000,
+      players: 0
+    }
+  );
+
+  // Reset Team B
+  await updateDoc(
+    doc(db, "teams", "teamB"),
+    {
+      budget: 10000,
+      players: 0
+    }
+  );
+
+  // Show first player again
+  currentPlayerId = null;
+
+  alert(
+    "🏆 Auction Reset Complete!"
+  );
+};
 // NEXT PLAYER
 window.nextPlayer = async function () {
   const snapshot =
