@@ -1,244 +1,468 @@
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  color:white;
+/* =========================
+   NETFLIX IPL THEME
+========================= */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: white;
+
   background:
-    radial-gradient(circle at top,
+    radial-gradient(
+      circle at top,
       #4b0000 0%,
       #180000 40%,
-      #000000 100%);
-}
-
-.header{
-  height:80px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:20px;
-
-  font-size:32px;
-  font-weight:bold;
-  color:#FFD700;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(0,0,0,0.95),
-      rgba(0,0,0,0.5)
+      #000000 100%
     );
 
-  box-shadow:
-    0 0 30px rgba(255,215,0,.2);
-}
-.broadcast{
-  display:grid;
-  grid-template-columns:1fr 2fr 1fr;
-  gap:30px;
-
-  padding:40px;
-  min-height:70vh;
+  min-height: 100vh;
 }
 
-.live{
-  color:#ff2a2a;
-  animation:pulse 1s infinite;
-}
+/* =========================
+   HEADER
+========================= */
 
-.live{
-  color:red;
-}
-
-.add-panel{
-  width:80%;
-  margin:30px auto;
-  background:#151515;
-  border:2px solid gold;
-  border-radius:20px;
-  padding:30px;
-}
-
-input,
-select{
-  width:100%;
-  padding:15px;
-  margin:10px 0;
-  border:none;
-  border-radius:12px;
-}
-
-button{
-  background:gold;
-  border:none;
-  padding:15px;
-  border-radius:12px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-#players {
-  display: flex;
-  justify-content: center;
-  padding: 40px;
-}
-
-.card{
-  width:450px;
-  background:#111;
-  border:2px solid gold;
-  border-radius:30px;
-  padding:30px;
-  text-align:center;
-  box-shadow:0 0 25px rgba(255,215,0,0.3);
-}
-
-.card img{
-  width:220px;
-  height:220px;
-  border-radius:50%;
-  object-fit:cover;
-  border:5px solid gold;
-}
-.card h2{
-  font-size:42px;
-  margin-top:20px;
-}
-
-.card p{
-  font-size:24px;
-}
-
-.bid{
-  font-size:45px;
-  color:#00ff88;
-  font-weight:bold;
-}
-
-.team{
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,215,0,.25);
-  border-radius:30px;
-  backdrop-filter:blur(25px);
-  padding:30px;
-  box-shadow:0 0 30px rgba(0,0,0,.4);
-}
-
-.team h2{
-  color:#FFD700;
-  text-align:center;
-  font-size:32px;
-}
-
-.money{
-  font-size:50px;
-  text-align:center;
-  margin:40px 0;
-}
-
-.count{
-  text-align:center;
-  font-size:25px;
-}
-
-.player{
-  background:
-  linear-gradient(
-    180deg,
-    rgba(30,30,30,.9),
-    rgba(10,10,10,.95)
-  );
-
-  border:2px solid rgba(255,215,0,.3);
-  border-radius:40px;
-  text-align:center;
-  padding:40px;
-  box-shadow:0 0 40px rgba(255,215,0,.15);
-}
-
-.player img{
-  width:280px;
-  height:280px;
-  border-radius:50%;
-  object-fit:cover;
-  border:6px solid gold;
-  box-shadow:0 0 40px gold;
-}
-
-.player h1{
-  font-size:55px;
-  margin-top:30px;
-}
-
-.category{
-  font-size:28px;
-  color:#cccccc;
-}
-
-.timer{
-  width:130px;
-  height:130px;
-  margin:auto;
-  border-radius:50%;
-  border:6px solid red;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:45px;
-  font-weight:bold;
-}
-
-.controls{
-  display:flex;
-  justify-content:center;
-  gap:20px;
-  margin-top:40px;
-}
-
-.controls button{
-  width:180px;
-}
-
-.queue{
-  display:flex;
-  overflow-x:auto;
-  gap:20px;
-  padding:30px;
-}
-
-.queue-card{
-  min-width:180px;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,215,0,.25);
-  border-radius:25px;
-  padding:20px;
-  text-align:center;
-}
-
-.queue-card img{
-  width:100px;
-  height:100px;
-  border-radius:50%;
-  object-fit:cover;
-}
-
-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.timer {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 5px solid red;
+.header {
+  height: 90px;
 
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 20px;
 
-  margin: 20px auto;
+  font-size: 36px;
+  font-weight: bold;
+  color: gold;
 
-  font-size: 45px;
+  background:
+    linear-gradient(
+      rgba(0,0,0,.95),
+      rgba(0,0,0,.65)
+    );
+
+  border-bottom: 2px solid gold;
+
+  box-shadow:
+    0 0 30px rgba(255,215,0,.2);
+}
+
+/* =========================
+   LIVE BADGE
+========================= */
+
+.live {
+  color: #ff2d2d;
+  font-size: 24px;
+
+  animation:
+    pulse 1s infinite;
+}
+
+@keyframes pulse {
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+/* =========================
+   ADD PLAYER PANEL
+========================= */
+
+.add-panel {
+  width: 80%;
+
+  margin: 30px auto;
+
+  background:
+    rgba(20,20,20,.92);
+
+  border: 2px solid gold;
+
+  border-radius: 25px;
+
+  padding: 30px;
+
+  box-shadow:
+    0 0 30px rgba(255,215,0,.25);
+}
+
+.add-panel h2 {
+  color: gold;
+  text-align: center;
+  font-size: 32px;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+input,
+select {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 15px;
+  margin: 12px 0;
+
+  border: none;
+  border-radius: 12px;
+
+  background: #222;
+  color: white;
+
+  font-size: 18px;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid gold;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+button {
+  background: gold;
+  color: black;
+
+  border: none;
+  border-radius: 12px;
+
+  padding: 15px;
+
+  font-size: 18px;
   font-weight: bold;
 
+  cursor: pointer;
+
+  transition: .3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+button:disabled {
+  background: #666;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+/* =========================
+   BROADCAST AREA
+========================= */
+
+.broadcast {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    2fr
+    1fr;
+
+  gap: 35px;
+
+  padding: 40px;
+}
+
+/* =========================
+   TEAM PANELS
+========================= */
+
+.team {
+  background:
+    rgba(15,15,15,.92);
+
+  border: 2px solid gold;
+  border-radius: 25px;
+
+  padding: 25px;
+
+  text-align: center;
+
+  box-shadow:
+    0 0 20px rgba(255,215,0,.25);
+}
+
+.team h2 {
+  color: gold;
+  font-size: 34px;
+}
+
+.money {
+  margin-top: 25px;
+
+  font-size: 42px;
+  font-weight: bold;
+
+  color: #00ff88;
+}
+
+.count {
+  margin-top: 15px;
+
+  font-size: 28px;
   color: white;
+}
+
+/* =========================
+   CURRENT PLAYER AREA
+========================= */
+
+#players {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.player {
+  width: 540px;
+
+  background:
+    rgba(18,18,18,.95);
+
+  border: 2px solid gold;
+  border-radius: 35px;
+
+  padding: 35px;
+
+  text-align: center;
+
+  box-shadow:
+    0 0 35px rgba(255,215,0,.25);
+
+  animation:
+    fadePlayer .5s;
+}
+
+@keyframes fadePlayer {
+  from {
+    opacity: 0;
+    transform: scale(.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.player img {
+  width: 260px;
+  height: 260px;
+
+  object-fit: cover;
+
+  border-radius: 50%;
+
+  border: 5px solid gold;
+
+  box-shadow:
+    0 0 30px rgba(255,215,0,.3);
+}
+
+.player h1 {
+  font-size: 46px;
+  margin: 20px 0;
+}
+
+.category {
+  font-size: 28px;
+  color: #cccccc;
+}
+
+.bid {
+  margin-top: 25px;
+
+  font-size: 58px;
+  font-weight: bold;
+
+  color: #00ff88;
+}
+
+.player p {
+  font-size: 24px;
+}
+
+/* =========================
+   TIMER
+========================= */
+
+.timer {
+  margin: 20px 0;
+
+  font-size: 52px;
+  font-weight: bold;
+
+  color: #ff4040;
+
+  animation:
+    pulse 1s infinite;
+}
+
+/* =========================
+   CONTROL BUTTONS
+========================= */
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+
+  margin-top: 30px;
+}
+
+.controls button {
+  min-width: 180px;
+}
+
+/* =========================
+   TEAM BID POPUP
+========================= */
+
+.bid-banner {
+  position: fixed;
+
+  top: 120px;
+  left: 50%;
+
+  transform:
+    translateX(-50%);
+
+  background: gold;
+  color: black;
+
+  padding: 18px 35px;
+
+  border-radius: 15px;
+
+  font-size: 28px;
+  font-weight: bold;
+
+  box-shadow:
+    0 0 30px rgba(255,215,0,.5);
+
+  animation:
+    pop .6s;
+}
+
+@keyframes pop {
+  from {
+    transform:
+      translateX(-50%)
+      scale(.8);
+
+    opacity: 0;
+  }
+
+  to {
+    transform:
+      translateX(-50%)
+      scale(1);
+
+    opacity: 1;
+  }
+}
+
+/* =========================
+   BID HISTORY PANEL
+========================= */
+
+.history {
+  width: 85%;
+  margin: 30px auto;
+
+  background:
+    rgba(18,18,18,.95);
+
+  border: 2px solid gold;
+  border-radius: 25px;
+
+  padding: 25px;
+}
+
+.history h2 {
+  color: gold;
+}
+
+#historyList {
+  font-size: 22px;
+  line-height: 40px;
+}
+
+/* =========================
+   UPCOMING PLAYERS
+========================= */
+
+.queue {
+  width: 90%;
+  margin: 30px auto;
+
+  display: flex;
+  gap: 20px;
+
+  overflow-x: auto;
+  padding-bottom: 20px;
+}
+
+.queue::-webkit-scrollbar {
+  height: 10px;
+}
+
+.queue::-webkit-scrollbar-thumb {
+  background: gold;
+  border-radius: 20px;
+}
+
+.queue-card {
+  min-width: 180px;
+
+  background:
+    rgba(20,20,20,.92);
+
+  border: 2px solid gold;
+  border-radius: 20px;
+
+  text-align: center;
+
+  padding: 20px;
+
+  transition: .3s;
+}
+
+.queue-card:hover {
+  transform: scale(1.06);
+}
+
+.queue-card img {
+  width: 100px;
+  height: 100px;
+
+  object-fit: cover;
+
+  border-radius: 50%;
+}
+
+.queue-card h3 {
+  color: gold;
+  margin-top: 15px;
+}
+
+.queue-card p {
+  color: #ccc;
+}
+
+/* =========================
+   SOLD ANIMATION
+========================= */
+
+.sold {
+  color: gold;
+  font-size: 38px;
+  font-weight: bold;
+
+  animation:
+    pulse 1s infinite;
 }
