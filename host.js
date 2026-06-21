@@ -6,9 +6,11 @@ import {
   addDoc,
   onSnapshot,
   doc,
+  getDoc,
   updateDoc,
   getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let timerInterval = null;
 
@@ -158,31 +160,82 @@ window.runTimer = function (id) {
 
 // SELL TO TEAM A
 window.sellA = async function (id) {
+
+  const playerSnap =
+    await getDoc(
+      doc(db, "players", id)
+    );
+
+  const p = playerSnap.data();
+
+  // Update player
   await updateDoc(
     doc(db, "players", id),
     {
       soldTo: "TEAM A",
       status: "sold",
-      active: false
+      active: false,
+      timer: 0
     }
   );
+
+  // Update Team A purse
+  const teamRef =
+    doc(db, "teams", "teamA");
+
+  const teamSnap =
+    await getDoc(teamRef);
+
+  const t = teamSnap.data();
+
+  await updateDoc(teamRef, {
+    budget:
+      t.budget - p.currentBid,
+
+    players:
+      t.players + 1
+  });
 
   clearInterval(timerInterval);
   timerInterval = null;
 
   nextPlayer();
 };
-
 // SELL TO TEAM B
 window.sellB = async function (id) {
+
+  const playerSnap =
+    await getDoc(
+      doc(db, "players", id)
+    );
+
+  const p = playerSnap.data();
+
   await updateDoc(
     doc(db, "players", id),
     {
       soldTo: "TEAM B",
       status: "sold",
-      active: false
+      active: false,
+      timer: 0
     }
   );
+
+  const teamRef =
+    doc(db, "teams", "teamB");
+
+  const teamSnap =
+    await getDoc(teamRef);
+
+  const t = teamSnap.data();
+
+  await updateDoc(teamRef, {
+    budget:
+      t.budget - p.currentBid,
+
+    players:
+      t.players + 1
+  });
 
   clearInterval(timerInterval);
   timerInterval = null;
