@@ -1,113 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Team B Auction</title>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: #0b0f1a;
-      color: white;
-      text-align: center;
-    }
-
-    .topbar {
-      background: #11182a;
-      padding: 15px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #ffcc00;
-    }
-
-    .card {
-      width: 320px;
-      margin: 30px auto;
-      background: rgba(255,255,255,0.05);
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(255,204,0,0.2);
-    }
-
-    img {
-      width: 100%;
-      border-radius: 15px;
-    }
-
-    .name {
-      font-size: 22px;
-      margin-top: 10px;
-    }
-
-    .price {
-      font-size: 26px;
-      color: #00ffcc;
-      margin: 10px 0;
-    }
-
-    .bidder {
-      color: #ffcc00;
-      margin-bottom: 15px;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .bid {
-      background: #ffcc00;
-    }
-
-    .bid:hover {
-      background: #e6b800;
-    }
-  </style>
+  <title>TEAM B</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="topbar">
-🏏 TEAM B AUCTION ROOM
+<div class="header">
+  🟢 TEAM B
 </div>
 
-<div class="card">
+<div class="broadcast">
 
-  <img id="playerImg" src="https://via.placeholder.com/300">
+  <div class="team">
 
-  <div class="name" id="playerName">Waiting for Player...</div>
+    <h2>TEAM B</h2>
 
-  <div class="price">
-    ₹ <span id="bid">0</span> Lakhs
+    <div id="money" class="money">
+      ₹100 Cr
+    </div>
+
+    <div id="count" class="count">
+      0 / 15 Players
+    </div>
+
   </div>
 
-  <div class="bidder">
-    Highest Bidder: <span id="bidder">None</span>
-  </div>
-
-  <button class="bid" onclick="placeBid()">BID +10 L</button>
+  <div id="player"></div>
 
 </div>
 
-<script>
-let currentBid = 0;
-let teamName = "TEAM B";
-
-function placeBid() {
-  currentBid += 10;
-
-  document.getElementById("bid").innerText = currentBid;
-  document.getElementById("bidder").innerText = teamName;
-
-  alert("Bid placed by TEAM B: " + currentBid);
-}
-</script>
+<script type="module" src="teamA.js"></script>
 
 </body>
 </html>
