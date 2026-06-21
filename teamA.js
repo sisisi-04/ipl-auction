@@ -53,12 +53,12 @@ onSnapshot(
         d => d.data().status === "live"
       );
 
-    // No player currently live
+    // Waiting Screen
     if (!current) {
       playerDiv.innerHTML = `
         <div class="player">
           <h2>
-            Waiting for Host to Start Auction...
+            🏏 Waiting for Host to Start Auction...
           </h2>
         </div>
       `;
@@ -104,11 +104,33 @@ onSnapshot(
           ${minutes}:${seconds}
         </div>
 
-        <button
-          onclick="bid('${current.id}')"
-          ${p.status !== "live" ? "disabled" : ""}>
-          BID +10
-        </button>
+        <div class="bid-buttons">
+
+          <button
+            onclick="bid('${current.id}', 10)"
+            ${p.status !== "live" ? "disabled" : ""}>
+            +10L
+          </button>
+
+          <button
+            onclick="bid('${current.id}', 20)"
+            ${p.status !== "live" ? "disabled" : ""}>
+            +20L
+          </button>
+
+          <button
+            onclick="bid('${current.id}', 50)"
+            ${p.status !== "live" ? "disabled" : ""}>
+            +50L
+          </button>
+
+          <button
+            onclick="bid('${current.id}', 100)"
+            ${p.status !== "live" ? "disabled" : ""}>
+            +1 Cr
+          </button>
+
+        </div>
 
       </div>
     `;
@@ -116,30 +138,38 @@ onSnapshot(
 );
 
 // BID FUNCTION
-window.bid = async function (id) {
+window.bid = async function (
+  id,
+  amount
+) {
+
+  const playerRef =
+    doc(db, "players", id);
 
   const snapshot =
-    await getDoc(
-      doc(db, "players", id)
-    );
+    await getDoc(playerRef);
 
   if (!snapshot.exists()) return;
 
   const p = snapshot.data();
 
-  // Prevent bidding after auction ends
-  if (p.status !== "live") {
+  // Auction not live
+  if (
+    p.status !== "live" ||
+    !p.active
+  ) {
     return;
   }
 
   await updateDoc(
-    doc(db, "players", id),
+    playerRef,
     {
       currentBid:
-        p.currentBid + 10,
+        p.currentBid + amount,
 
       highestBidder:
         "TEAM A"
     }
   );
+
 };
