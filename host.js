@@ -10,6 +10,8 @@ import {
   getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+let timerInterval = null;
+
 // FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyBoFnhlMryKch7mOT-M1BJ_heuIJiJrumM",
@@ -25,6 +27,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const playersRef = collection(db, "players");
 
+// HTML ELEMENTS
 const name = document.getElementById("name");
 const category = document.getElementById("category");
 const price = document.getElementById("price");
@@ -81,66 +84,121 @@ window.addPlayer = async function () {
 
 // START AUCTION
 window.startAuction = async function (id) {
-  await updateDoc(doc(db, "players", id), {
-    active: true,
-    status: "live",
-    timer: 300
-  });
+  if (timerInterval) return;
 
-  runTimer(id);
+  const snapshot = await getDocs(playersRef);
+
+  const playerDoc =
+    snapshot.docs.find(
+      d => d.id === id
+    );
+
+  if (!playerDoc) return;
+
+  const p = playerDoc.data();
+
+  if (p.status === "live") return;
+
+  await updateDoc(
+    doc(db, "players", id),
+    {
+      active: true,
+      status: "live"
+    }
+  );
+
+  window.runTimer(id);
 };
 
 // TIMER
 window.runTimer = function (id) {
-  let time = 300;
+  if (timerInterval) return;
 
-  const interval = setInterval(async () => {
-    time--;
+  timerInterval = setInterval(async () => {
+    const snapshot =
+      await getDocs(playersRef);
 
-    await updateDoc(doc(db, "players", id), {
-      timer: time
-    });
+    const playerDoc =
+      snapshot.docs.find(
+        d => d.id === id
+      );
 
-    if (time <= 0) {
-      clearInterval(interval);
-
-      await updateDoc(doc(db, "players", id), {
-        active: false,
-        status: "ended"
-      });
+    if (!playerDoc) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      return;
     }
+
+    const p = playerDoc.data();
+
+    if (p.timer <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+
+      await updateDoc(
+        doc(db, "players", id),
+        {
+          active: false,
+          status: "ended"
+        }
+      );
+
+      return;
+    }
+
+    await updateDoc(
+      doc(db, "players", id),
+      {
+        timer: p.timer - 1
+      }
+    );
+
   }, 1000);
 };
 
-// SELL TEAM A
+// SELL TO TEAM A
 window.sellA = async function (id) {
-  await updateDoc(doc(db, "players", id), {
-    soldTo: "TEAM A",
-    status: "sold",
-    active: false
-  });
+  await updateDoc(
+    doc(db, "players", id),
+    {
+      soldTo: "TEAM A",
+      status: "sold",
+      active: false
+    }
+  );
+
+  clearInterval(timerInterval);
+  timerInterval = null;
 
   nextPlayer();
 };
 
-// SELL TEAM B
+// SELL TO TEAM B
 window.sellB = async function (id) {
-  await updateDoc(doc(db, "players", id), {
-    soldTo: "TEAM B",
-    status: "sold",
-    active: false
-  });
+  await updateDoc(
+    doc(db, "players", id),
+    {
+      soldTo: "TEAM B",
+      status: "sold",
+      active: false
+    }
+  );
+
+  clearInterval(timerInterval);
+  timerInterval = null;
 
   nextPlayer();
 };
 
 // NEXT PLAYER
 window.nextPlayer = async function () {
-  const snapshot = await getDocs(playersRef);
+  const snapshot =
+    await getDocs(playersRef);
 
-  let docs = snapshot.docs.filter(
-    d => d.data().status !== "sold"
-  );
+  let docs =
+    snapshot.docs.filter(
+      d => d.data().status !== "sold"
+    );
 
   docs = sortPlayers(docs);
 
@@ -153,9 +211,10 @@ window.nextPlayer = async function () {
     return;
   }
 
-  let index = docs.findIndex(
-    d => d.id === currentPlayerId
-  );
+  let index =
+    docs.findIndex(
+      d => d.id === currentPlayerId
+    );
 
   index++;
 
@@ -163,7 +222,8 @@ window.nextPlayer = async function () {
     index = 0;
   }
 
-  currentPlayerId = docs[index].id;
+  currentPlayerId =
+    docs[index].id;
 
   renderCurrentPlayer(docs);
 };
@@ -178,16 +238,18 @@ function renderCurrentPlayer(docs) {
     currentPlayerId = docs[0].id;
   }
 
-  const currentPlayerDoc = docs.find(
-    d => d.id === currentPlayerId
-  );
+  const currentPlayerDoc =
+    docs.find(
+      d => d.id === currentPlayerId
+    );
 
   if (!currentPlayerDoc) {
     currentPlayerId = docs[0].id;
     return renderCurrentPlayer(docs);
   }
 
-  const p = currentPlayerDoc.data();
+  const p =
+    currentPlayerDoc.data();
 
   const minutes = String(
     Math.floor(p.timer / 60)
@@ -259,9 +321,10 @@ function renderCurrentPlayer(docs) {
 
 // LIVE LISTENER
 onSnapshot(playersRef, (snapshot) => {
-  let docs = snapshot.docs.filter(
-    d => d.data().status !== "sold"
-  );
+  let docs =
+    snapshot.docs.filter(
+      d => d.data().status !== "sold"
+    );
 
   docs = sortPlayers(docs);
 
